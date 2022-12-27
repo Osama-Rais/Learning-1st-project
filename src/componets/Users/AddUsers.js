@@ -1,33 +1,60 @@
 import React, {useState} from "react";
 import Card from '../UI/Card';
 import classes from './AddUser.module.css';
-import Button from '../UI/Button'
+import Button from '../UI/Button';
+import ErrorModal from "../UI/ErrorModal";
 
 
 const AddUser = (props) => {
-const [enterUsername,setEnterUsername]= useState('');
-const [enterAge,setEnterAge]= useState('');
+const [enteredUsername,setEnteredUsername]= useState('');
+const [enteredAge,setEnteredAge]= useState('');
+const [error,setError] = useState('');
+
     const addUserHandler = (event) => {
-        event.prevetDefault();
-        console.log(enterUsername, enterAge);
+        event.preventDefault();
+        if (enteredUsername.trim().length ===0 || enteredAge.trim().length ===0){
+            setError({
+                title:'Invalid Inputs',
+                message:'Input fields are empty'
+            });
+            return;
+        }
+        if (+enteredAge < 1){
+            setError({
+                title:'Invalid Inputs',
+                message:'Input fields are empty'
+            });
+            return;
+        }
+        props.onAddUser(enteredUsername, enteredAge)
+        setEnteredUsername('');
+        setEnteredAge('');
     };
 
     const usernameChangeHandler = (event) =>{
-        setEnterUsername(event.target.value);
+        setEnteredUsername(event.target.value);
     };
     const ageChangeHandler = (event) =>{
-        setEnterAge(event.target.value);
+        setEnteredAge(event.target.value);
     };
+
+    const errorHandler = () =>{
+        setError(null);
+    }
 return(
+    <div>
+    {error && <ErrorModal title={error.title} message={error.message} onConfirm={errorHandler}/>}
     <Card className={classes.input}>
     <form onSubmit={addUserHandler}>
         <label htmlform="username">User Name</label>
-        <input id="username" type="text" onChange={usernameChangeHandler}/>
+    <input id="username" type="text" value={enteredUsername} onChange={usernameChangeHandler}/>
         <label htmlform="age">Age (Years)</label>
-        <input id="age" type="number"  onChange={ageChangeHandler}    />
+        <input id="age" type="number" value={enteredAge} onChange={ageChangeHandler}    />
         <Button type="submit">Add Users</Button>
     </form>
+    
     </Card>
+    </div>
 )
 
 
